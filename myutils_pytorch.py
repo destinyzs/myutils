@@ -14,16 +14,17 @@ def GlobalAvgPooling2d(x):
 
 
 def Reduce_Sum(x):
-	'''Sum up all in x(list) in PyTorch.
-	
-	Arguments:
-		x: list, each has the same shape
-	'''
-	assert type(x) == list, 'Only List Support!'
-	if len(x) == 1:
-		return x
+    '''Sum up all in x(list).
 
-	re = x[0]
-	for xx in x[1:]:
-		re += xx
-	return re
+    Arguments:
+        x: list, each has the same shape
+    '''
+    assert type(x) == list or type(x) == tuple, 'Only List and Tuple Support!'
+    if len(x) == 1:
+        return x[0]
+
+    re = torch.zeros_like(x[0], dtype=x[0].dtype)
+    for xx in x[:]:
+        re += xx
+
+    return re
