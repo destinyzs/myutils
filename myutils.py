@@ -5,9 +5,9 @@ import cv2
 
 ################################################## Boxes ##################################################
 
-def transYxyx2Xyxy(boxes):
+def transYxyx2Xyxy(boxes, with_label_last = False):
 	'''
-	Transform boxes' format from (y1,x1, y2,x2...) to (x1,y1, x2,y2...)
+	Transform boxes' format from (y1,x1, y2,x2...(label)) to (x1,y1, x2,y2...(label))
 	
 	Arguments:
 		boxes: ndarray, [N, (y1,x1, y2,x2...)]
@@ -15,21 +15,33 @@ def transYxyx2Xyxy(boxes):
 	Returns:
 		boxes: ndarray, [N, (x1,y1, x2,y2...)]
 	'''
-	assert boxes.shape[1] % 2 == 0, 'boxes format error.'
-	ys = [boxes[:, i*2] for i in range(boxes.shape[1]//2)]
-	xs = [boxes[:, i*2+1] for i in range(boxes.shape[1]//2)]
+	if not with_label_last:
+		assert boxes.shape[1] % 2 == 0, 'boxes format error.'
+	# ys = [boxes[:, i*2] for i in range(boxes.shape[1]//2)]
+	# xs = [boxes[:, i*2+1] for i in range(boxes.shape[1]//2)]
+	if with_label_last:
+		tp = boxes[:,:-1]
+	else:
+		tp = boxes
+	xs = tp[:, 0::2]
+	ys = tp[:, 1::2]
 	assert len(ys) == len(xs), 'xs and ys must have the same length.'
 
 	result = []
 	for i in range(len(ys)):
 		result.append(xs[i])
 		result.append(ys[i])
+	if with_label_last:
+		label = boxes[:, -1]
 
-	return np.stack(result, axis = 1).astype(boxes.dtype)
+	if with_label_last:
+		return np.stack(result + [label], axis = 1).astype(boxes.dtype)
+	else:
+		return np.stack(result, axis = 1).astype(boxes.dtype)
 
-def transXyxy2Yxyx(boxes):
+def transXyxy2Yxyx(boxes, with_label_last = False):
 	'''
-	Transform boxes' format from (x1,y1, x2,y2...) to (y1,x1, y2,x2...)
+	Transform boxes' format from (x1,y1, x2,y2...(label)) to (y1,x1, y2,x2...(label))
 	
 	Arguments:
 		boxes: ndarray, [N, (x1,y1, x2,y2...)]
@@ -37,21 +49,33 @@ def transXyxy2Yxyx(boxes):
 	Returns:
 		boxes: ndarray, [N, (y1,x1, y2,x2...)]
 	'''
-	assert boxes.shape[1] % 2 == 0, 'boxes format error.'
-	xs = [boxes[:, i*2] for i in range(boxes.shape[1]//2)]
-	ys = [boxes[:, i*2+1] for i in range(boxes.shape[1]//2)]
+	if not with_label_last:
+		assert boxes.shape[1] % 2 == 0, 'boxes format error.'
+	# xs = [boxes[:, i*2] for i in range(boxes.shape[1]//2)]
+	# ys = [boxes[:, i*2+1] for i in range(boxes.shape[1]//2)]
+	if with_label_last:
+		tp = boxes[:,:-1]
+	else:
+		tp = boxes
+	xs = tp[:, 0::2]
+	ys = tp[:, 1::2]
 	assert len(ys) == len(xs), 'xs and ys must have the same length.'
 
 	result = []
 	for i in range(len(xs)):
 		result.append(ys[i])
 		result.append(xs[i])
+	if with_label_last:
+		label = boxes[:, -1]
 
-	return np.stack(result, axis = 1).astype(boxes.dtype)
+	if with_label_last:
+		return np.stack(result + [label], axis = 1).astype(boxes.dtype)
+	else:
+		return np.stack(result, axis = 1).astype(boxes.dtype)
 
-def transXyxy2Xyxyxyxy(boxes):
+def transXyxy2Xyxyxyxy(boxes, with_label_last = False):
 	'''
-	Transform boxes' format from (x1,y1, x2,y2) to (x1,y1, x2,y2, x3,y3, x4,y4)
+	Transform boxes' format from (x1,y1, x2,y2 (label)) to (x1,y1, x2,y2, x3,y3, x4,y4 (label))
 	
 	Arguments:
 		boxes: ndarray, [N, (x1,y1, x2,y2)]
@@ -59,7 +83,8 @@ def transXyxy2Xyxyxyxy(boxes):
 	Returns:
 		boxes: ndarray, [N, (x1,y1, x2,y2, x3,y3, x4,y4)]
 	'''
-	assert boxes.shape[1] % 2 == 0, 'boxes format error.'
+	if not with_label_last:
+		assert boxes.shape[1] % 2 == 0, 'boxes format error.'
 	x1 = boxes[:, 0]
 	y1 = boxes[:, 1]
 	x2 = boxes[:, 2]
@@ -68,11 +93,17 @@ def transXyxy2Xyxyxyxy(boxes):
 			  x2, y1, 
 			  x2, y2, 
 			  x1, y2]
-	return np.stack(result, axis = 1).astype(boxes.dtype)
+	if with_label_last:
+		label = boxes[:, -1]
 
-def transXyxyxyxy2Xyxy(boxes):
+	if with_label_last:
+		return np.stack(result + [label], axis = 1).astype(boxes.dtype)
+	else:
+		return np.stack(result, axis = 1).astype(boxes.dtype)
+
+def transXyxyxyxy2Xyxy(boxes, with_label_last = False):
 	'''
-	Transform boxes' format from (x1,y1, x2,y1, x2,y2, x1,y2) to (x1,y1, x2,y2)
+	Transform boxes' format from (x1,y1, x2,y1, x2,y2, x1,y2 (label)) to (x1,y1, x2,y2 (label))
 	
 	Arguments:
 		boxes: ndarray, [N, (x1,y1, x2,y1, x2,y2, x1,y2)]
@@ -80,20 +111,160 @@ def transXyxyxyxy2Xyxy(boxes):
 	Returns:
 		boxes: ndarray, [N, (x1,y1, x2,y2)]
 	'''
-	assert boxes.shape[1] % 2 == 0, 'boxes format error.'
-	xs = boxes[:, 0::2]
-	ys = boxes[:, 1::2]
+	if not with_label_last:
+		assert boxes.shape[1] % 2 == 0, 'boxes format error.'
+	# xs = [boxes[:, i*2] for i in range(boxes.shape[1]//2)]
+	# ys = [boxes[:, i*2+1] for i in range(boxes.shape[1]//2)]
+	if with_label_last:
+		tp = boxes[:,:-1]
+	else:
+		tp = boxes
+	xs = tp[:, 0::2]
+	ys = tp[:, 1::2]
 	x1 = np.min(xs, axis = -1)
 	y1 = np.min(ys, axis = -1)
 	x2 = np.max(xs, axis = -1)
 	y2 = np.max(ys, axis = -1)
 	result = [x1, y1, x2, y2]
-	return np.stack(result, axis = 1).astype(boxes.dtype)
+	if with_label_last:
+		label = boxes[:, -1]
+
+	if with_label_last:
+		return np.stack(result + [label], axis = 1).astype(boxes.dtype)
+	else:
+		return np.stack(result, axis = 1).astype(boxes.dtype)
+
+def transXyxy2XyCtrWh(boxes, with_label_last = False):
+	'''
+	Transform boxes' format from (x1,y1, x2,y2 (label)) to (x_ctr,y_ctr, w,h (label))
+	
+	Arguments:
+		boxes: ndarray, [N, (x1,y1, x2,y2)]
+	
+	Returns:
+		boxes: ndarray, [N, (x_ctr,y_ctr, w,h)]
+	'''
+	if not with_label_last:
+		assert boxes.shape[1] % 2 == 0, 'boxes format error.'
+	x1 = boxes[:, 0]
+	y1 = boxes[:, 1]
+	x2 = boxes[:, 2]
+	y2 = boxes[:, 3]
+
+	x_ctr = (x1 + x2) * 0.5
+	y_ctr = (y1 + y2) * 0.5
+	w = x2 - x1
+	h = y2 - y1
+	result = [x_ctr, y_ctr, w, h]
+	if with_label_last:
+		label = boxes[:, -1]
+
+	if with_label_last:
+		return np.stack(result + [label], axis = 1).astype(boxes.dtype)
+	else:
+		return np.stack(result, axis = 1).astype(boxes.dtype)
+
+def transXyCtrWh2Xyxy(boxes, with_label_last = False):
+	'''
+	Transform boxes' format from (x_ctr,y_ctr, w,h (label)) to (x1,y1, x2,y2 (label))
+	
+	Arguments:
+		boxes: ndarray, [N, (x_ctr,y_ctr, w,h)]
+	
+	Returns:
+		boxes: ndarray, [N, (x1,y1, x2,y2)]
+	'''
+	if not with_label_last:
+		assert boxes.shape[1] % 2 == 0, 'boxes format error.'
+	x_ctr = boxes[:, 0]
+	y_ctr = boxes[:, 1]
+	w = boxes[:, 2]
+	h = boxes[:, 3]
+
+	x1 = x_ctr - w * 0.5
+	y1 = y_ctr - h * 0.5
+	x2 = x_ctr + w * 0.5
+	y2 = y_ctr + h * 0.5
+	result = [x1, y1, x2, y2]
+	if with_label_last:
+		label = boxes[:, -1]
+
+	if with_label_last:
+		return np.stack(result + [label], axis = 1).astype(boxes.dtype)
+	else:
+		return np.stack(result, axis = 1).astype(boxes.dtype)
+
+def transXyCtrWh2Xyxyxyxy(boxes, with_label_last = False):
+	'''
+	Transform boxes' format from (x_ctr,y_ctr, w,h (label)) to (x1,y1, x2,y1, x2,y2, x1,y2 (label))
+	
+	Arguments:
+		boxes: ndarray, [N, (x_ctr,y_ctr, w,h)]
+	
+	Returns:
+		boxes: ndarray, [N, (x1,y1, x2,y1, x2,y2, x1,y2)]
+	'''
+	if not with_label_last:
+		assert boxes.shape[1] % 2 == 0, 'boxes format error.'
+	x_ctr = boxes[:, 0]
+	y_ctr = boxes[:, 1]
+	w = boxes[:, 2]
+	h = boxes[:, 3]
+
+	x1 = x_ctr - w * 0.5
+	y1 = y_ctr - h * 0.5
+	x2 = x_ctr + w * 0.5
+	y2 = y_ctr + h * 0.5
+	result = [x1, y1, 
+			  x2, y1, 
+			  x2, y2, 
+			  x1, y2]
+	if with_label_last:
+		label = boxes[:, -1]
+
+	if with_label_last:
+		return np.stack(result + [label], axis = 1).astype(boxes.dtype)
+	else:
+		return np.stack(result, axis = 1).astype(boxes.dtype)
+
+
+def rescale_WhOfBoxes_ByRatio(boxes, ratio, with_label_last = False):
+	'''
+	Rescale boxes' width and height by ratio(w,h), in the case where the center doesn't change
+	
+	Arguments:
+		boxes: ndarray, [N, (x_ctr,y_ctr, w,h)]
+		ratio: int or tuple(w,h)
+	
+	Returns:
+		boxes: ndarray, [N, (x_ctr,y_ctr, w,h)]
+	'''
+	if not with_label_last:
+		assert boxes.shape[1] % 2 == 0, 'boxes format error.'
+	x_ctr = boxes[:, 0]
+	y_ctr = boxes[:, 1]
+	w = boxes[:, 2]
+	h = boxes[:, 3]
+
+	assert type(ratio) in [int, tuple], 'Unknown ratio type.'
+	if type(ratio) == int:
+		w, h = w * ratio, h * ratio
+	if type(ratio) == tuple:
+		w, h = w * ratio[0], h * ratio[1]
+
+	result = [x_ctr, y_ctr, w, h]
+	if with_label_last:
+		label = boxes[:, -1]
+
+	if with_label_last:
+		return np.stack(result + [label], axis = 1).astype(boxes.dtype)
+	else:
+		return np.stack(result, axis = 1).astype(boxes.dtype)
 
 
 def transQuadrangle2Rotate(coordinates):
 	"""
-	Transform boxes from (x1,y1, x2,y2, x3,y3, x4,y4) to (x_ctr, y_ctr, w, h, theta).
+	Transform boxes from (x1,y1, x2,y2, x3,y3, x4,y4) to (x_ctr, y_ctr, w, h, theta), -90<=theta<0
 
 	Arguments:
 		coordinates: ndarray, [N, (x1,y1, x2,y2, x3,y3, x4,y4)] 
@@ -157,6 +328,7 @@ def get_horizen_minAreaRectangle_by_rotate_box(coordinates):
 
 
 ################################################## OS ##################################################
+import os
 
 
 def get_base_name(p):
