@@ -13,13 +13,30 @@ sudo ./configure --enable-optimizations --enable-shared
 sudo make -j8
 sudo make install
 
+
 #### modify soft link
 # python3 --version
 # mv /usr/bin/python3 /usr/bin/python3_bak
 # ln -s /usr/local/bin/python3.6 /usr/bin/python3
 # python3 --version
 
+
 #### ModuleNotFoundError: No module named 'lsb_release'
+# ll /usr/lib/python3/dist-packages/lsb_release.py
+# ln -s /usr/lib/python3/dist-packages/lsb_release.py /usr/local/lib/python3.6/site-packages/lsb_release.py
+
+
+#### python3: error while loading shared libraries: libpython3.6m.so.1.0: cannot open shared object file: No such file or directory
+# ldd /usr/local/bin/python3
+# find / -name 'libpython3.6m.so.1.0'
+# echo "/usr/local/lib/" > /etc/ld.so.conf.d/python3.6.conf
+# ldconfig
+# python3 --version
+
+#### when pip3 list
+####   File "/usr/local/lib/python3.6/site-packages/pip/_vendor/distro.py", line 931, in _get_lsb_release_info
+####     raise subprocess.CalledProcessError(code, cmd, stdout, stderr)
+#### subprocess.CalledProcessError: Command 'lsb_release -a' returned non-zero exit status 1.
 # ll /usr/lib/python3/dist-packages/lsb_release.py
 # ln -s /usr/lib/python3/dist-packages/lsb_release.py /usr/local/lib/python3.6/site-packages/lsb_release.py
 

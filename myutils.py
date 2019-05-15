@@ -1,6 +1,8 @@
 import os, sys
 import numpy as np
 import cv2
+from skimage import transform as skitf
+from pycocotools.coco import maskUtils
 
 
 ################################################## Boxes ##################################################
@@ -325,6 +327,61 @@ def get_horizen_minAreaRectangle_by_rotate_box(coordinates):
 
 	return np.stack(result, axis = 1).astype(np.float32)
 
+
+def boxesRotate(boxes, angle, img_shape):
+	'''
+	Rotate boxes by angle degree. reference: https://github.com/aleju/imgaug/blob/master/imgaug/augmenters/geometric.py#L730
+
+	Arguments:
+		boxes: [N, 8]
+		angle: int
+		img_shape：(h, w), rotated image.shape, not the original image shape!!
+	
+	Returns:
+		boxes: [N, 8]
+	'''
+	height, width = img_shape[0], img_shape[1]
+	boxes_ = boxes.reshape([-1, 2])
+	shift_x = width / 2.0 - 0.5
+	shift_y = height / 2.0 - 0.5
+
+	matrix_transforms = skitf.AffineTransform(
+		rotation = math.radians(angle)
+	)
+	matrix_to_topleft = skitf.SimilarityTransform(translation=[-shift_x, -shift_y])
+	matrix_to_center = skitf.SimilarityTransform(translation=[shift_x, shift_y])
+	matrix = (matrix_to_topleft + matrix_transforms + matrix_to_center)
+
+	boxes_aug = skitf.matrix_transform(boxes_, matrix.params)
+	boxes_aug = boxes_aug.reshape(-1, 8)
+	# ctr_x = np.mean(boxes_aug[:, 0::2], axis = -1)
+	# ctr_y = np.mean(boxes_aug[:, 1::2], axis = -1)
+	# valid1 = np.where((ctr_x > 0) & (ctr_x < w))[0]
+	# valid2 = np.where((ctr_y > 0) & (ctr_y < h))[0]
+	# valid = np.intersect1d(valid1, valid2)
+	return boxes_aug
+
+
+def poly2mask(polys, height, width):
+	'''
+	Convert rotate boxes(N, 8) to mask type.
+	
+	Arguments:
+		polys: [N, 8(x1,y1, x2,y2, x3,y3, x4,y4)]
+		height: int
+		width: int
+	
+	Returns:
+		m: [height, width], uint8
+	'''
+	assert isinstance(polys, np.ndarray) or isinstance(polys, list), 'Unknow input type.'
+	if isinstance(polys, np.ndarray):
+		polys = list(map(list, list(polys))) ## convert array to list.
+	rles = maskUtils.frPyObjects(polys, height, width)
+	rle = maskUtils.merge(rles)
+	m = maskUtils.decode(rle) ## [height, width], uint8
+
+	return m
 
 
 ################################################## OS ##################################################
