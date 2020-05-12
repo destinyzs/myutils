@@ -1,7 +1,8 @@
 sudo cp ./sources/sources.list.aliyun /etc/apt/sources.list
 sudo apt-get update
 sudo apt-get -y install software-properties-common
-sudo add-apt-repository ppa:jonathonf/python-3.6
+# sudo add-apt-repository ppa:jonathonf/python-3.6
+sudo add-apt-repository ppa:fkrull/deadsnakes
 sudo apt-get -y install build-essential libpq-dev libssl-dev openssl libffi-dev zlib1g-dev
 sudo apt-get -y install python3-pip python3-dev libpython3.6-dev
 ## sudo apt-get -y install wget
