@@ -32,6 +32,9 @@ sudo make install
 # echo "/usr/local/lib/" > /etc/ld.so.conf.d/python3.6.conf
 # ldconfig
 # python3 --version
+## Or
+# cd python-install-dir (tar.gz download path)
+# cp libpython3.6m.* /usr/lib/(64)
 
 #### when pip3 list
 ####   File "/usr/local/lib/python3.6/site-packages/pip/_vendor/distro.py", line 931, in _get_lsb_release_info
