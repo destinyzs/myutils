@@ -66,3 +66,10 @@ sudo make install
 # sudo mv /var/lib/dpkg/info/* /var/lib/dpkg/info.bak
 # sudo rm -rf /var/lib/dpkg/info
 # sudo mv /var/lib/dpkg/info.bak /var/lib/dpkg/info
+
+
+## install jupyter in python3.5
+## zipp==1.2.0
+## ipython==7.9.0
+## pip install jupyter_contrib_nbextensions
+## jupyter contrib nbextension install --user
