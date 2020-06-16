@@ -1,10 +1,10 @@
-deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial main restricted universe multiverse
-deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-security main restricted universe multiverse
-deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse
-deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse
-deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-proposed main restricted universe multiverse
-deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial main restricted universe multiverse
-deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-security main restricted universe multiverse
-deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse
-deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse
-deb-src http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-proposed main restricted universe multiverse
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ Codename main restricted
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ Codename-updates main restricted
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ Codename universe
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ Codename-updates universe
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ Codename multiverse
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ Codename-updates multiverse
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ Codename-backports main restricted universe multiverse
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ Codename-security main restricted
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ Codename-security universe
+deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ Codename-security multiverse
